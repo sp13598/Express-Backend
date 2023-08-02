@@ -5,18 +5,28 @@ const Customer = db.customers
 
 // main work
 
-// 1. Save Customer
-const addCustomer = async (req, res) => {
-    let info = {
-        name: req.body.name,
-        email: req.body.email,
-        mobile: req.body.mobile,
-        address: req.body.address
+    const addCustomer = async (req, res) => {
+    try {
+      const { name, email, mobile, city } = req.body;
+  
+      // Check if a customer with the same email already exists
+      const existingCustomer = await Customer.findOne({ where: { email } });
+      if (existingCustomer) {
+        return res.status(400).json({ error: 'Customer with this email already exists' });
+      }
+  
+      const customer = await Customer.create({
+        name,
+        email,
+        mobile,
+        city,
+      });
+  
+      res.status(201).json(customer);
+    } catch (error) {
+      res.status(500).json({ error: 'Unable to create customer' });
     }
-
-    const customer = await Customer.create(info)
-    res.status(201).json(customer);
-}
+  };
 
 // 2. Get All Customers
 const getAllCustomers = async (req, res) => {
@@ -48,10 +58,18 @@ const updateCustomer = async (req, res) => {
 
 // 5. Delete Customer
 const deleteCustomer = async (req, res) => {
-    let id = req.params.id
-    await Customer.destroy({ where: { id: id}})
-    res.status(200).send('Customer deleted sucessfully')
-}
+  try {
+    let id = req.params.id;
+    const deletedRowCount = await Customer.destroy({ where: { id: id } });
+    if (deletedRowCount === 0) {
+      res.status(404).json({ message: 'Customer not found' });
+    } else {
+      res.status(204).send(); // No Content
+    }
+  } catch (error) {
+    res.status(500).json({ error: 'Unable to delete customer' });
+  }
+};
 
 module.exports = {
     addCustomer,
