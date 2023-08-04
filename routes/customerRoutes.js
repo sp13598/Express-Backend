@@ -1,23 +1,20 @@
-const express = require('express')
+const express = require('express');
+const router = express.Router();
+const customerController = require('../controllers/customerController');
 
-const customerController = require('../controllers/customerController')
+// Create a new customer
+router.post('/customers', customerController.saveCustomer);
 
-const router = express.Router()
+// Read all customers
+router.get('/customers', customerController.getAllCustomers);
 
-// POST --> /customers/addCustomer
-router.post('/addCustomer', customerController.addCustomer)
+// Get a customer by ID
+router.get('/customers/:id', customerController.getCustomerById);
 
-// GET --> /customers/getAllCustomers
-router.get('/getAllCustomers', customerController.getAllCustomers)
+// Update a customer
+router.put('/customers/:id', customerController.updateCustomer);
 
-// GET --> /customers/getCustomer
-router.get('/:id', customerController.getCustomer)
+// Delete a customer
+router.delete('/customers/:id', customerController.deleteCustomer);
 
-// PUT --> /customers/ID
-router.put('/:id', customerController.updateCustomer)
-
-//DELETE --> /customers/ID
-router.delete('/:id', customerController.deleteCustomer)
-
-
-module.exports = router
+module.exports = router;
