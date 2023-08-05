@@ -5,8 +5,17 @@ module.exports = {
   saveCustomer: async (req, res) => {
     try {
       const { name, email, mobile, project, sale_contact, status, golivedate } = req.body;
+      console.log({ name, email, mobile, project, sale_contact, status, golivedate });
+  
+      // Check if a customer with the same email already exists
+      const existingCustomer = await Customer.findOne({ where : { email }});
+
+      if (existingCustomer) {
+        return res.status(400).json({ error: 'Customer with this email already exists.' });
+      }
+  
       const customer = await Customer.create({ name, email, mobile, project, sale_contact, status, golivedate });
-      res.status(201).json(customer);
+      res.status(201).json(existingCustomer);
     } catch (error) {
       res.status(500).json({ error: 'An error occurred while creating the customer.' });
     }
